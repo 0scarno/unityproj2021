@@ -87,7 +87,7 @@ public class PlayerControl : MonoBehaviour
         //JUMP
         if (jumpBtn>=0.1 && jumpOK)
         {
-            if (transform.position.y < jumpMax)
+            if (transform.position.y < jumpMax && jumpOK)
             {
                 verticalInfluence.y += (jumpMax - transform.position.y)/2*(Time.deltaTime);
             }
@@ -128,5 +128,6 @@ public class PlayerControl : MonoBehaviour
         _controller.Move((moveSpd * Time.deltaTime * moveDir) + verticalInfluence);
         Debug.Log(jumpMax - transform.position.y);
         Debug.Log(isBonk);
+        Debug.Log(camAngle);
     }
 }
