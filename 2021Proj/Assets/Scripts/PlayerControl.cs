@@ -37,11 +37,17 @@ public class PlayerControl : MonoBehaviour
     private bool isGrounded;
     private bool isBonk;
     private float jumpMax;
+    private SpriteHandler _spriteHandler;
 
     // Start is called before the first frame update
     void Start()
     {
         isGrounded = false;
+        _spriteHandler = GameObject.Find("Quad").GetComponent<SpriteHandler>();
+        if (_spriteHandler == null)
+        {
+            Debug.LogError("SpriteHandler is null");
+        }
     }
 
     // Update is called once per frame
@@ -73,15 +79,19 @@ public class PlayerControl : MonoBehaviour
             verticalInfluence.y = 0f;
             jumpOK = true;            
             jumpMax = gCheckPos.y + _jumpHeight;
+            _spriteHandler.SetGrounded(true);
         }
         else if(!isGrounded && verticalInfluence.y < 0f)
         {
             jumpOK = false;
+            _spriteHandler.SetGrounded(false);
+            _spriteHandler.SetJump(false);
         }
 
         if (transform.position.y < jumpMax && isBonk)
         {
             jumpOK = false;
+            _spriteHandler.SetJump(false);
         }
 
         //JUMP
@@ -90,6 +100,9 @@ public class PlayerControl : MonoBehaviour
             if (transform.position.y < jumpMax && jumpOK)
             {
                 verticalInfluence.y += (jumpMax - transform.position.y)/2*(Time.deltaTime);
+                _spriteHandler.SetJump(true);
+                _spriteHandler.SetGrounded(false);
+
             }
             else
             {
@@ -100,6 +113,7 @@ public class PlayerControl : MonoBehaviour
 
         // Directional Input Monitoring 
         inputDir = new Vector3(horiz, 0f, verti);
+
         
         //Vector Normalisation for Keyboard Input
         if (inputDir.magnitude > 1) 
@@ -111,10 +125,12 @@ public class PlayerControl : MonoBehaviour
         if (sprintBtn >= 0.1)
         {
             moveSpd = _baseSpd * _sprintMod;
+            _spriteHandler.SetSprint(true);
         }
         else
         {
             moveSpd = _baseSpd;
+            _spriteHandler.SetSprint(false);
         }
 
         // Create the Angle the player is intending to travel at
@@ -126,8 +142,5 @@ public class PlayerControl : MonoBehaviour
 
         //Apply the moves every frame
         _controller.Move((moveSpd * Time.deltaTime * moveDir) + verticalInfluence);
-        Debug.Log(jumpMax - transform.position.y);
-        Debug.Log(isBonk);
-        Debug.Log(camAngle);
     }
 }
