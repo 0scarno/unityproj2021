@@ -26,9 +26,6 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private float _jumpHeight = 2f;
 
-    [SerializeField]
-    private float _jumpSpd = 1f;
-
     //Variable Statements
     private Vector3 inputDir;
     private float moveSpd;
@@ -74,14 +71,14 @@ public class PlayerControl : MonoBehaviour
         isBonk = Physics.CheckSphere(bonkCheckPos, radius, ground);
         
         //Stop Player from falling if they are grounded, apply fall multis if not
-        if(isGrounded && verticalInfluence.y < 0f )
+        if(isGrounded && verticalInfluence.y < 0 )
         {
-            verticalInfluence.y = 0f;
+            verticalInfluence.y = -0;
             jumpOK = true;            
             jumpMax = gCheckPos.y + _jumpHeight;
             _spriteHandler.SetGrounded(true);
         }
-        else if(!isGrounded && verticalInfluence.y < 0f)
+        else if(!isGrounded && verticalInfluence.y < -0)
         {
             jumpOK = false;
             _spriteHandler.SetGrounded(false);
@@ -97,9 +94,10 @@ public class PlayerControl : MonoBehaviour
         //JUMP
         if (jumpBtn>=0.1 && jumpOK)
         {
+
             if (transform.position.y < jumpMax && jumpOK)
             {
-                verticalInfluence.y += (jumpMax - transform.position.y)/2*(Time.deltaTime);
+                verticalInfluence.y += ( jumpMax - transform.position.y )/2*(Time.deltaTime);
                 _spriteHandler.SetJump(true);
                 _spriteHandler.SetGrounded(false);
 
@@ -142,5 +140,6 @@ public class PlayerControl : MonoBehaviour
 
         //Apply the moves every frame
         _controller.Move((moveSpd * Time.deltaTime * moveDir) + verticalInfluence);
+        Debug.Log(verticalInfluence.y);
     }
 }

@@ -26,8 +26,6 @@ public class SpriteHandler : MonoBehaviour
     {
         float horiz = Input.GetAxisRaw("Horizontal");
         float verti = Input.GetAxisRaw("Vertical");
-        _animator.SetFloat("horizAxis", horiz);
-        _animator.SetFloat("vertiAxis", verti);
 
         if (horiz > 0)
         {
