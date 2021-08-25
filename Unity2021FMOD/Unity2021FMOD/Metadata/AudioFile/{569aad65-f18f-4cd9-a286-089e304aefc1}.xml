@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{569aad65-f18f-4cd9-a286-089e304aefc1}">
+		<property name="assetPath">
+			<value>FS/FS - Dirt09.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.15961451247165534</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{5556ef38-e36c-411f-a27f-5d6cac675a6a}</destination>
+		</relationship>
+	</object>
+</objects>
