@@ -6,7 +6,6 @@ public class SpriteHandler : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +19,7 @@ public class SpriteHandler : MonoBehaviour
         {
             Debug.LogError("Animator not found");
         }
+
     }
     // Update is called once per frame
     void Update()
@@ -53,9 +53,6 @@ public class SpriteHandler : MonoBehaviour
         {
             SetWalk(false);
         }
-
-        Debug.Log(horiz);
-        Debug.Log(verti);
     }
 
 

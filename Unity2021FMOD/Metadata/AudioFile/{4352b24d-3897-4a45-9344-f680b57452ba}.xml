@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{4352b24d-3897-4a45-9344-f680b57452ba}">
+		<property name="assetPath">
+			<value>Player/Footsteps/FS Unsorteed/FS - Dirt06.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.2824716553287982</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7234e52a-8170-483a-a1c1-ded0f9e9fa70}</destination>
+		</relationship>
+	</object>
+</objects>

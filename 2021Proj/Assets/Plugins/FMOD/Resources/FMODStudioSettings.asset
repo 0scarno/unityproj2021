@@ -335,8 +335,8 @@ MonoBehaviour:
   SwitchSettingsMigration: 1
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: ../Unity2021FMOD/Unity2021FMOD/Unity2021FMOD.fspro
-  sourceBankPath: ../Unity2021FMOD/Unity2021FMOD/Build
+  sourceProjectPath: ../Unity2021FMOD/unity2021FMOD.fspro
+  sourceBankPath: ../Unity2021FMOD/Build
   SourceBankPathUnformatted: 
   BankRefreshCooldown: 1
   ShowBankRefreshWindow: 1
@@ -360,7 +360,6 @@ MonoBehaviour:
   MasterBanks:
   - Master
   Banks:
-  - NPC
   - Player
   BanksToLoad: []
   LiveUpdatePort: 9264
@@ -369,7 +368,7 @@ MonoBehaviour:
   MeterChannelOrdering: 0
   StopEventsOutsideMaxDistance: 0
   BoltUnitOptionsBuildPending: 0
-  EnableErrorCallback: 0
+  EnableErrorCallback: 1
   SharedLibraryUpdateStage: 0
   SharedLibraryTimeSinceStart: 0
   HideSetupWizard: 1

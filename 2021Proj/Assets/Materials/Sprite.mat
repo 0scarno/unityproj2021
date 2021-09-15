@@ -144,7 +144,7 @@ Material:
     - _RenderQueue: 0
     - _RimPower: 2
     - _Saturation: 1
-    - _ShadowAlphaCutoff: 0.495
+    - _ShadowAlphaCutoff: 1
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
