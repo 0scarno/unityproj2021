@@ -42,6 +42,8 @@ public class PlayerControl : MonoBehaviour
     private bool isBonk;
     private float jumpMax;
     private SpriteHandler _spriteHandler;
+    //private JumpLight _jumpLight;
+    private ParticleScript _particleScript;
     private RaycastHit hit;
     private bool _sliding;
     private float _slideLimit;
@@ -53,10 +55,16 @@ public class PlayerControl : MonoBehaviour
     {
         isGrounded = false;
         _slideLimit = _controller.slopeLimit;
+
         _spriteHandler = GameObject.Find("Quad").GetComponent<SpriteHandler>();
         if (_spriteHandler == null)
         {
             Debug.LogError("SpriteHandler is null");
+        }   
+        _particleScript = GameObject.Find("ParticleLight").GetComponent<ParticleScript>();
+        if (_particleScript == null)
+        {
+            Debug.LogError("ParticleScript is null");
         }
     }
 
@@ -82,7 +90,7 @@ public class PlayerControl : MonoBehaviour
         Vector3 gCheckPos = transform.position + (Vector3.down * 0.6f);
         LayerMask ground = LayerMask.GetMask("Ground");
         isGrounded = Physics.CheckSphere(gCheckPos, radius, ground);
-        Debug.Log("Grounded =" + isGrounded);
+        //Debug.Log("Grounded =" + isGrounded);
 
         //Bonk Helmet
         Vector3 bonkCheckPos = transform.position + (Vector3.up * 0.6f);
@@ -99,6 +107,7 @@ public class PlayerControl : MonoBehaviour
             }
             jumpMax = gCheckPos.y + _jumpHeight;
             _sliding = false;
+
             //check if the gound under the player is beyond the slope limit
             if (Physics.Raycast(transform.position, -Vector3.up, out hit))
             {
@@ -148,7 +157,6 @@ public class PlayerControl : MonoBehaviour
                 movementDelta.y += ( jumpMax - transform.position.y )/2*(Time.deltaTime);
                 _spriteHandler.SetJump(true);
                 _spriteHandler.SetGrounded(false);
-
             }
             else
             {
@@ -156,6 +164,22 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
+        //Light Control
+        //if (movementDelta.y > 0 && _jumpHeight<jumpMax)
+        //{
+        //    _jumpLight.LightIntensity(jumpMax, transform.position.y);
+        //}
+        //else if (movementDelta.y <= 0 && _jumpHeight != jumpMax)
+        //{
+        //    _jumpLight.LightDim();
+        //}
+
+        //particle Light control
+        if (movementDelta.y > 0 && _jumpHeight<jumpMax)
+        {
+            Debug.Log("emit");
+            _particleScript.Emit();
+        }
 
         // Directional Input Monitoring 
         inputDir = new Vector3(horiz, 0f, verti);
@@ -197,7 +221,7 @@ public class PlayerControl : MonoBehaviour
         _controller.Move((moveSpd * Time.deltaTime * moveDir) + movementDelta);
 
         //Debug Messages
-        Debug.Log("moveDir =" + moveDir);
+        //Debug.Log("moveDir =" + moveDir);
 
         if (movementDelta.y <= 0f)
         {
