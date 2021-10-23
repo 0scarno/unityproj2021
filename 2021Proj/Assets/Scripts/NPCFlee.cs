@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class NPCFlee : MonoBehaviour
 {
@@ -17,21 +18,30 @@ public class NPCFlee : MonoBehaviour
     [SerializeField]
     private GameObject _fleeNPC;
 
+    Sequence fleeSequence = DOTween.Sequence();
+
     private Vector3 _pos;
     private BoxCollider _fleeCollider;
     private bool _spooked;
     private bool _fly;
     private bool _stick;
     private bool _return;
+    //private DOTween runTween = (() => _fleeNPC.transform.position, x => _fleeNPC.transform.position = x, _launchPos, 2);
+    //private TweenCallback flyTween = transform.DOMove(_pos, 2);
 
 
     // Start is called before the first frame update
     void Start()
     {
+        DOTween.Init();
+
         _fleeCollider = GetComponent<BoxCollider>();
 
         _fleeNPC.transform.position = _startPos.transform.position;
-
+        _spooked = false;
+        _fly = false;
+        _stick = false;
+        _return = false;
     }
 
     // Update is called once per frame
@@ -46,13 +56,23 @@ public class NPCFlee : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Character"))
         {
-            Debug.Log("Initiate Protocol: FLEE");
             _spooked = true;
-            StartCoroutine(Flee());
+            _pos = _desinations[Random.Range(0, _desinations.Length)].transform.position;
+
+            if (_fleeNPC.transform.position == _startPos.transform.position)
+            {
+                _fleeNPC.transform.DOMove(_launchPos.transform.position, 1f);
+            }
+
+            if (_fleeNPC.transform.position == _launchPos.transform.position)
+            {
+                _fleeNPC.transform.DOMove(_pos, 2f);
+            }
+
         }
     }
 
@@ -60,23 +80,8 @@ public class NPCFlee : MonoBehaviour
     {
         if (other.CompareTag("Character"))
         {
-            Debug.Log("Initiate Protocol: FLEE");
             _spooked = false;
-            StartCoroutine(Return());
+            //StartCoroutine(Return());
         }
-    }
-
-    IEnumerator Flee()
-    {
-        while(_spooked && _fleeNPC.transform.position != _launchPos.transform.position)
-        {
-            _fleeNPC.transform.position = Vector3.Lerp(_startPos.transform.position, _launchPos.transform.position, Time.deltaTime);
-        }
-        yield return null;
-    }
-
-    IEnumerator Return()
-    {
-        yield return null;
     }
 }
