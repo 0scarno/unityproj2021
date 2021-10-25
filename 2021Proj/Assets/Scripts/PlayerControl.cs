@@ -42,6 +42,7 @@ public class PlayerControl : MonoBehaviour
     private bool isBonk;
     private float jumpMax;
     private SpriteHandler _spriteHandler;
+    private NPCFlee _fleescript;
     //private JumpLight _jumpLight;
     private ParticleScript _particleScript;
     private RaycastHit hit;
@@ -65,6 +66,11 @@ public class PlayerControl : MonoBehaviour
         if (_particleScript == null)
         {
             Debug.LogError("ParticleScript is null");
+        }
+        _fleescript = GameObject.Find("FleeTrigger").GetComponent<NPCFlee>();
+        if (_fleescript == null)
+        {
+            Debug.LogError("FleeScript is null");
         }
     }
 
@@ -196,11 +202,13 @@ public class PlayerControl : MonoBehaviour
         {
             moveSpd = _baseSpd * _sprintMod;
             _spriteHandler.SetSprint(true);
+            _fleescript.spooked = true;
         }
         else
         {
             moveSpd = _baseSpd;
             _spriteHandler.SetSprint(false);
+            _fleescript.spooked = false;
         }
 
         //set move to slide if it needs to
