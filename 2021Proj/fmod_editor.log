@@ -7,7 +7,7 @@
 [LOG] OutputWASAPI::init                       : Output buffer size: 4096 samples, latency: 0.00ms, period: 10.00ms, DSP buffer: 1024 * 4
 [LOG] Thread::initThread                       : Init FMOD stream thread. Affinity: 0x8000000000000003, Priority: 0xFFFF7FFB, Stack Size: 98304, Semaphore: No, Sleep Time: 10, Looping: Yes.
 [LOG] Thread::initThread                       : Init FMOD mixer thread. Affinity: 0x8000000000000001, Priority: 0xFFFF7FFA, Stack Size: 81920, Semaphore: No, Sleep Time: 0, Looping: Yes.
-[LOG] AsyncManager::init                       : manager 00000229597AFB38 isAsync 0 updatePeriod 0.02
+[LOG] AsyncManager::init                       : manager 0000025DA7015C68 isAsync 0 updatePeriod 0.02
 [LOG] AsyncManager::init                       : done
 [LOG] PlaybackSystem::init                     : 
 [LOG] Thread::initThread                       : Init FMOD Studio sample load thread. Affinity: 0x8000000000000003, Priority: 0xFFFF7FFD, Stack Size: 98304, Semaphore: No, Sleep Time: 1, Looping: No.
@@ -18,39 +18,3 @@
 [LOG] Manager::readBank                        : fileversion = 135, compatVersion = 132 (oldest = 44, newest = 135)
 [LOG] Manager::readBank                        : fileversion = 135, compatVersion = 132 (oldest = 44, newest = 135)
 [LOG] PlaybackSystem::acquireMasterBus         : Setting master channel group format to 3
-[LOG] SoundI::release                          :  (00000228827EDFC8)
-[LOG] SoundI::release                          :     FS - Wood01 (0000022872B6BC28)
-[LOG] SoundI::release                          :  (00000228827ED5B8)
-[LOG] SoundI::release                          :     FS - Wood02 (0000022872B6CAC8)
-[LOG] SoundI::release                          :  (00000228827ED448)
-[LOG] SoundI::release                          :     FS - Wood03 (0000022872B6B748)
-[LOG] SoundI::release                          :  (00000228827EC028)
-[LOG] SoundI::release                          :     FS - Wood04 (0000022872B6DFE8)
-[LOG] SoundI::release                          :  (00000228827EF9A8)
-[LOG] SoundI::release                          :     FS - Wood05 (0000022872B6BDC8)
-[LOG] SoundI::release                          :  (00000228827EE9D8)
-[LOG] SoundI::release                          :     FS - Wood06 (0000022872B6B408)
-[LOG] SoundI::release                          :  (00000228827EDE58)
-[LOG] SoundI::release                          :     FS - Wood07 (0000022872B6DB08)
-[LOG] SoundI::release                          :  (00000228827ED898)
-[LOG] SoundI::release                          :     FS - Wood08 (0000022872B6D2E8)
-[LOG] SoundI::release                          :  (00000228827ECBA8)
-[LOG] SoundI::release                          :     FS - Wood09 (0000022872B6DCA8)
-[LOG] SoundI::release                          :  (00000228827EE6F8)
-[LOG] SoundI::release                          :     FS - Wood10 (0000022872B6B8E8)
-[LOG] SoundI::release                          :  (00000228827EC5E8)
-[LOG] SoundI::release                          :     FS - Wood11 (0000022872B6BF68)
-[LOG] SoundI::release                          :  (00000228827ED2D8)
-[LOG] SoundI::release                          :     FS - Wood12 (0000022872B6D7C8)
-[LOG] SoundI::release                          :  (00000228827EC478)
-[LOG] SoundI::release                          :     FS - Wood13 (0000022872B6E328)
-[LOG] Thread::callback                         : FMOD Studio update thread finished.
-[LOG] Thread::callback                         : FMOD Studio bank load thread finished.
-[LOG] Profile::disconnectAll                   : Profiler disconnecting all clients
-[LOG] Thread::callback                         : FMOD Studio sample load thread finished.
-[LOG] LiveUpdate::release                      : 
-[LOG] LiveUpdate::reset                        : Reset connection (reason Disconnected)
-[LOG] Thread::callback                         : FMOD stream thread finished.
-[LOG] Thread::callback                         : FMOD mixer thread finished.
-[LOG] Profile::disconnectAll                   : Profiler disconnecting all clients
-[LOG] SystemI::close                           : Closed.

@@ -43,7 +43,7 @@ public class PlayerControl : MonoBehaviour
     private float jumpMax;
     private SpriteHandler _spriteHandler;
     private NPCFlee _fleescript;
-    //private JumpLight _jumpLight;
+    private MudScript _mudScript;
     private ParticleScript _particleScript;
     private RaycastHit hit;
     private bool _sliding;
@@ -71,6 +71,12 @@ public class PlayerControl : MonoBehaviour
         if (_fleescript == null)
         {
             Debug.LogError("FleeScript is null");
+        }
+        
+        _mudScript = GameObject.Find("mudObj").GetComponent<MudScript>();
+        if (_mudScript == null)
+        {
+            Debug.LogError("MudScript is null");
         }
     }
 
@@ -170,16 +176,6 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-        //Light Control
-        //if (movementDelta.y > 0 && _jumpHeight<jumpMax)
-        //{
-        //    _jumpLight.LightIntensity(jumpMax, transform.position.y);
-        //}
-        //else if (movementDelta.y <= 0 && _jumpHeight != jumpMax)
-        //{
-        //    _jumpLight.LightDim();
-        //}
-
         //particle Light control
         if (movementDelta.y > 0 && _jumpHeight<jumpMax)
         {
@@ -200,13 +196,13 @@ public class PlayerControl : MonoBehaviour
         //Sprint Check & Modify
         if (sprintBtn >= 0.1)
         {
-            moveSpd = _baseSpd * _sprintMod;
+            moveSpd = _baseSpd * _sprintMod * _mudScript.mudSpdMod;
             _spriteHandler.SetSprint(true);
             _fleescript.spooked = true;
         }
         else
         {
-            moveSpd = _baseSpd;
+            moveSpd = _baseSpd * _mudScript.mudSpdMod;
             _spriteHandler.SetSprint(false);
             _fleescript.spooked = false;
         }
