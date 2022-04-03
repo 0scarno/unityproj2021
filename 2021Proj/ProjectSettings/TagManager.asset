@@ -8,6 +8,8 @@ TagManager:
   - LightKillbox
   - JumpLight
   - Twig
+  - Bouncy
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -21,7 +23,7 @@ TagManager:
   - Rock
   - Wood
   - Metal
-  - 
+  - Bouncy
   - 
   - 
   - 

@@ -31,37 +31,100 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField]
     private float _slideSpeed = 3f;
+    [SerializeField]
+    private LayerMask ground;
+    [SerializeField]
+    private LayerMask bouncy;
 
     //Variable Statements
     private Vector3 inputDir;
     private Vector3 moveDir = Vector3.zero;
-    private float moveSpd;
-    private bool jumpOK;
     private Vector3 movementDelta;
-    private bool isGrounded;
-    private bool isBonk;
+    private Vector3 gCheckPos;
+    private Vector3 bonkCheckPos;
+
+
+    private float moveSpd;
     private float jumpMax;
+    private float _slideLimit;
+    private float bounceJump;
+    private float radius;
+    private float horiz;
+    private float verti;
+    private float jumpBtn;
+    private float sprintBtn;
+
+    private bool jumpOK;
+    private bool isGrounded;
+    private bool isBounce;
+    private bool isBonk;
+    private bool isBonkBounce;
+    private bool _sliding;
+    private bool _playerControl;
+    private bool _bouncing;
+
     private SpriteHandler _spriteHandler;
     private NPCFlee _fleescript;
     private MudScript _mudScript;
     private ParticleScript _particleScript;
+
     private RaycastHit hit;
-    private bool _sliding;
-    private float _slideLimit;
-    private bool _playerControl;
     private Vector3 _contactPoint;
+
 
     // Start is called before the first frame update
     void Start()
     {
         isGrounded = false;
         _slideLimit = _controller.slopeLimit;
+        radius = _capsuleCollider.radius * 1.5f;
+        jumpMax = gCheckPos.y + _jumpHeight;
+        bounceJump = jumpMax + 3;
+        //ground = LayerMask.GetMask("Ground");
+        //bouncy = LayerMask.GetMask("Bouncy");
+        NullRefExcep();
+    }
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+
+        horiz = Input.GetAxisRaw("Horizontal");
+        verti = Input.GetAxisRaw("Vertical");
+        jumpBtn = Input.GetAxisRaw("Jump");
+        sprintBtn = Input.GetAxisRaw("Sprint");
+
+        gCheckPos = transform.position + (Vector3.down * 0.72f);
+        bonkCheckPos = transform.position + (Vector3.up * 1f);
+
+
+        Camera();
+
+        Gravity();
+
+        DetectGround();
+
+        Bonk();
+
+        Jump();
+
+        Move();
+
+        SmoothSlope();
+
+        ParticleControl();
+
+        Debuging();
+      
+    }
+    
+    void NullRefExcep()
+    {
         _spriteHandler = GameObject.Find("Quad").GetComponent<SpriteHandler>();
         if (_spriteHandler == null)
         {
             Debug.LogError("SpriteHandler is null");
-        }   
+        }
         _particleScript = GameObject.Find("ParticleLight").GetComponent<ParticleScript>();
         if (_particleScript == null)
         {
@@ -72,7 +135,7 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.LogError("FleeScript is null");
         }
-        
+
         _mudScript = GameObject.Find("mudObj").GetComponent<MudScript>();
         if (_mudScript == null)
         {
@@ -80,44 +143,39 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void Camera ()
     {
-        // Axis Assignment
-        float horiz = Input.GetAxisRaw("Horizontal");
-        float verti = Input.GetAxisRaw("Vertical");
-        float jumpBtn = Input.GetAxisRaw("Jump");
-        float sprintBtn = Input.GetAxisRaw("Sprint");
-        
         // Camera Angle Assignment to Player Rotation
         float camAngle = cam.eulerAngles.y;
         transform.rotation = Quaternion.Euler(0f, camAngle, 0f);
-        
+
         // Create the Angle the player is intending to travel at
         float targetAngle = Mathf.Atan2(inputDir.x, inputDir.z) * Mathf.Rad2Deg + camAngle;
         moveDir = Quaternion.Euler(0f, targetAngle, 0f) * (Vector3.forward * inputDir.magnitude);
+    }
 
-        //Ground Detector
-        float radius = _capsuleCollider.radius * 0.9f;
-        Vector3 gCheckPos = transform.position + (Vector3.down * 0.6f);
-        LayerMask ground = LayerMask.GetMask("Ground");
+    void Gravity()
+    {
+        movementDelta.y -= ((_gravityValue * _gravityValue) / 3) * Time.deltaTime;
+    }
+
+    void DetectGround()
+    {
         isGrounded = Physics.CheckSphere(gCheckPos, radius, ground);
-        //Debug.Log("Grounded =" + isGrounded);
+        isBounce = Physics.CheckSphere(gCheckPos, radius, bouncy);
 
-        //Bonk Helmet
-        Vector3 bonkCheckPos = transform.position + (Vector3.up * 0.6f);
-        isBonk = Physics.CheckSphere(bonkCheckPos, _capsuleCollider.radius, ground);
-        
-        //Stop Player from falling if they are grounded, apply fall multis if not
-        if(isGrounded && movementDelta.y < 0 )
+        if (isGrounded && movementDelta.y < 0)
         {
             _spriteHandler.SetGrounded(true);
             movementDelta.y = -0;
+           
             if (jumpBtn == 0)
             {
-                jumpOK = true;            
+                jumpOK = true;
             }
+
             jumpMax = gCheckPos.y + _jumpHeight;
+
             _sliding = false;
 
             //check if the gound under the player is beyond the slope limit
@@ -128,45 +186,79 @@ public class PlayerControl : MonoBehaviour
                     _sliding = true;
                 }
             }
-
         }
-        else if(!isGrounded && movementDelta.y < 0)
+        else if (!isGrounded && movementDelta.y < 0)
         {
             _spriteHandler.SetGrounded(false);
             _spriteHandler.SetJump(false);
             jumpOK = false;
-            if (Physics.Raycast(transform.position, -Vector3.up, out hit, 0.6f))
-            {
-                if (Vector3.Angle(hit.normal, Vector3.up) > _slideLimit)
-                {
-                    _sliding = true;
-                }
-            }
-            else
-            {
-                Physics.Raycast(_contactPoint + Vector3.up, -Vector3.up, out hit);
-                if (Vector3.Angle(hit.normal,Vector3.up) > _slideLimit)
-                {
-                    _sliding = true;
-                }
-            }
 
+            SlideCheck();
+        }
+        
+        if (isBounce)
+        {
+            _bouncing = true;
+        }
+        if (transform.position.y >= bounceJump)
+        {
+            _bouncing = false;
+        }
+        if (jumpBtn >= 0.1 && _bouncing)
+        {
+            if (transform.position.y < bounceJump)
+            {
+                movementDelta.y = 0.15f;
+                movementDelta.y += (jumpMax - transform.position.y) / 2 * (Time.deltaTime);
+                _spriteHandler.SetJump(true);
+                _spriteHandler.SetGrounded(false);
+            }
+        }
+        else if (isBounce && jumpBtn < 0.1)
+        {
+            movementDelta.y = 0.067f;
+            jumpMax = gCheckPos.y + _jumpHeight;
+            _spriteHandler.SetJump(true);
+            _spriteHandler.SetGrounded(false);
         }
 
-        if (transform.position.y < jumpMax && isBonk)
+    }
+
+    void SlideCheck()
+    {
+
+        if (Physics.Raycast(transform.position, -Vector3.up, out hit, 0.6f))
         {
-            jumpOK = false;
-            _spriteHandler.SetJump(false);
-        }
-
-
-        //JUMP
-        if (jumpBtn>=0.1 && jumpOK)
-        {
-
-            if (transform.position.y < jumpMax && jumpOK)
+            if (Vector3.Angle(hit.normal, Vector3.up) > _slideLimit)
             {
-                movementDelta.y += ( jumpMax - transform.position.y )/2*(Time.deltaTime);
+                _sliding = true;
+            }
+        }
+        else
+        {
+            Physics.Raycast(_contactPoint + Vector3.up, -Vector3.up, out hit);
+            if (Vector3.Angle(hit.normal, Vector3.up) > _slideLimit)
+            {
+                _sliding = true;
+            }
+        }
+    }
+
+    void Bonk()
+    {
+        isBonk = Physics.CheckSphere(bonkCheckPos, radius, ground);
+        isBonkBounce = Physics.CheckSphere(bonkCheckPos, radius, bouncy);
+    }
+    
+    void Jump()
+    {
+
+        if (jumpBtn >= 0.1 && jumpOK)
+        {
+            if (transform.position.y < jumpMax && jumpOK && !isBonk)
+            {
+               
+                movementDelta.y += (jumpMax - transform.position.y) * (Time.deltaTime*2);
                 _spriteHandler.SetJump(true);
                 _spriteHandler.SetGrounded(false);
             }
@@ -175,20 +267,19 @@ public class PlayerControl : MonoBehaviour
                 jumpOK = false;
             }
         }
+  
+    }
 
-        //particle Light control
-        if (movementDelta.y > 0 && _jumpHeight<jumpMax)
-        {
-            Debug.Log("emit");
-            _particleScript.Emit();
-        }
 
+    void Move()
+    {
         // Directional Input Monitoring 
         inputDir = new Vector3(horiz, 0f, verti);
 
-        
+        _controller.Move((moveSpd * Time.deltaTime * moveDir) + movementDelta);
+
         //Vector Normalisation for Keyboard Input
-        if (inputDir.magnitude > 1) 
+        if (inputDir.magnitude > 1)
         {
             _ = inputDir.normalized;
         }
@@ -207,30 +298,21 @@ public class PlayerControl : MonoBehaviour
             _fleescript.spooked = false;
         }
 
-        //set move to slide if it needs to
         if (_sliding)
         {
             Vector3 hitNormal = hit.normal;
             moveDir = new Vector3(hit.normal.x, -hit.normal.y, hit.normal.z);
             Vector3.OrthoNormalize(ref hitNormal, ref moveDir);
             moveDir *= _slideSpeed;
-            //_playerControl = false;
         }
+    }
 
-        //Apply Gravity
-        movementDelta.y -= ((_gravityValue*_gravityValue)/3) * Time.deltaTime;
-
-
-        //Apply the moves every frame
-        _controller.Move((moveSpd * Time.deltaTime * moveDir) + movementDelta);
-
-        //Debug Messages
-        //Debug.Log("moveDir =" + moveDir);
-
+    void SmoothSlope()
+    {
         if (movementDelta.y <= 0f)
         {
             //check for slope underneath
-            
+
             if (Physics.Raycast(gCheckPos, Vector3.down, out hit))
             {
                 // teleport to slope
@@ -242,10 +324,62 @@ public class PlayerControl : MonoBehaviour
             }
         }
     }
-    
-    // Store point that we're in contact with for use in FixedUpdate if needed
+
+    void ParticleControl()
+    {
+        if (movementDelta.y > 0 && _jumpHeight < jumpMax)
+        {
+            _particleScript.Emit();
+        }
+    }
+
+    void Debuging()
+    {
+        //Debug.Log("Bouncing=" + _bouncing);
+        Debug.Log("Grounded=" + isGrounded);
+        //Debug.Log("input Direction =" + inputDir);
+        //Debug.Log("Jump Btn =" + jumpBtn);
+        //Debug.Log("JumpOK = " + jumpOK);
+        //Debug.Log("Mov.Y = " + movementDelta.y);
+        //Debug.Log(" JumpMax = " + jumpMax);
+        Debug.Log("Bonk is" + isBonk);
+
+    }
+
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Store point that we're in contact with for use in FixedUpdate if needed
+
         _contactPoint = hit.point;
+    }
+
+    
+     private void OnDrawGizmos()
+     {
+        //DrawBounceGizmo();
+        DrawSpheresGizmo(false, true);// Bools = (ground, bonk)
+
+
+    }
+
+    private void DrawSpheresGizmo(bool ground, bool bonk)
+    {
+        if(ground)
+        {
+            Gizmos.DrawSphere(gCheckPos, radius);
+
+        }
+        if (bonk)
+        {
+            Gizmos.DrawSphere(bonkCheckPos, radius);
+        }
+    }
+
+    private void DrawBounceGizmo()
+    {
+        Vector3 jumpMaxPoint = new Vector3(transform.position.x, jumpMax, transform.position.z);
+        Vector3 bounceJumpPoint = new Vector3(transform.position.x, bounceJump, transform.position.z);
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(jumpMaxPoint, 0.3f);
     }
 }
