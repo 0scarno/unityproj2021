@@ -77,7 +77,7 @@ public class PlayerControl : MonoBehaviour
     {
         isGrounded = false;
         _slideLimit = _controller.slopeLimit;
-        radius = _capsuleCollider.radius * 1.5f;
+        radius = _capsuleCollider.radius * 1f;
         jumpMax = gCheckPos.y + _jumpHeight;
         bounceJump = jumpMax + 3;
         //ground = LayerMask.GetMask("Ground");
@@ -94,8 +94,8 @@ public class PlayerControl : MonoBehaviour
         jumpBtn = Input.GetAxisRaw("Jump");
         sprintBtn = Input.GetAxisRaw("Sprint");
 
-        gCheckPos = transform.position + (Vector3.down * 0.72f);
-        bonkCheckPos = transform.position + (Vector3.up * 1f);
+        gCheckPos = transform.position + (Vector3.down * 1.2f);
+        bonkCheckPos = transform.position + (Vector3.up * 1.2f);
 
 
         Camera();
@@ -103,7 +103,7 @@ public class PlayerControl : MonoBehaviour
         Gravity();
 
         DetectGround();
-
+       
         Bonk();
 
         Jump();
@@ -275,8 +275,15 @@ public class PlayerControl : MonoBehaviour
     {
         // Directional Input Monitoring 
         inputDir = new Vector3(horiz, 0f, verti);
+        
+        if (_sliding)
+        {
+            Vector3 hitNormal = hit.normal;
+            moveDir = new Vector3(hit.normal.x, -hit.normal.y, hit.normal.z);
+            Vector3.OrthoNormalize(ref hitNormal, ref moveDir);
+            moveDir *= _slideSpeed;
+        }
 
-        _controller.Move((moveSpd * Time.deltaTime * moveDir) + movementDelta);
 
         //Vector Normalisation for Keyboard Input
         if (inputDir.magnitude > 1)
@@ -298,13 +305,7 @@ public class PlayerControl : MonoBehaviour
             _fleescript.spooked = false;
         }
 
-        if (_sliding)
-        {
-            Vector3 hitNormal = hit.normal;
-            moveDir = new Vector3(hit.normal.x, -hit.normal.y, hit.normal.z);
-            Vector3.OrthoNormalize(ref hitNormal, ref moveDir);
-            moveDir *= _slideSpeed;
-        }
+        _controller.Move((moveSpd * Time.deltaTime * moveDir) + movementDelta);
     }
 
     void SmoothSlope()
@@ -336,14 +337,15 @@ public class PlayerControl : MonoBehaviour
     void Debuging()
     {
         //Debug.Log("Bouncing=" + _bouncing);
-        Debug.Log("Grounded=" + isGrounded);
+        //Debug.Log("Grounded=" + isGrounded);
         //Debug.Log("input Direction =" + inputDir);
         //Debug.Log("Jump Btn =" + jumpBtn);
         //Debug.Log("JumpOK = " + jumpOK);
         //Debug.Log("Mov.Y = " + movementDelta.y);
         //Debug.Log(" JumpMax = " + jumpMax);
-        Debug.Log("Bonk is" + isBonk);
-
+        //Debug.Log("Bonk is" + isBonk);
+        Debug.Log("Sliding is" + _sliding);
+        Debug.Log("Slide Speed is" + _slideSpeed);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -357,7 +359,7 @@ public class PlayerControl : MonoBehaviour
      private void OnDrawGizmos()
      {
         //DrawBounceGizmo();
-        DrawSpheresGizmo(false, true);// Bools = (ground, bonk)
+        DrawSpheresGizmo(true, true);// Bools = (ground, bonk)
 
 
     }
